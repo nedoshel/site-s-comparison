@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 require "rvm/capistrano"
-require "thinking_sphinx/capistrano"
 require "bundler/capistrano"
-#require 'capistrano/nginx/tasks'
 
 ssh_options[:forward_agent] = true
 ssh_options[:port] = 22

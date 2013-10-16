@@ -1,0 +1,15 @@
+= form_for(@site, html: {class: "form-horizontal"}) do |f|
+  %fieldset
+    .span6
+      .control-group
+        .control-label
+          = f.label :site_url
+        .controls
+          = f.text_field :site_url, class: "input-xlarge"
+      .control-group
+        .control-label
+          = f.label :site_regexp
+        .controls
+          = f.text_field :site_regexp, class: "input-xlarge"
+  .form-actions
+    = f.submit t("label.save"), class: "btn btn-primary"

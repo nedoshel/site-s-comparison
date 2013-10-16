@@ -1,0 +1,20 @@
+%table.table.table-condensed.table-striped
+  %thead
+    %tr
+      %th Адрес страницы
+      %th Дата последнего изменения
+      %th Регулярное выражение
+      %th Проверить
+      %th Действия
+  %tbody
+    - @sites.each do |site|
+      %tr
+        %td= link_to site.site_url, site.site_url, target: "_blank"
+        %td= site.site_updated_at.try(:getlocal).try(:strftime, "%d.%m.%Y %H:%M")
+        %td= site.site_regexp
+        %td= link_to '<i class="icon-refresh"></i>'.html_safe, update_time_site_path(site), method: :put, class: "btn" 
+        %td
+          = link_to '<i class="icon-pencil"></i>'.html_safe, edit_site_path(site), class: "btn" 
+          = link_to '<i class="icon-trash"></i>'.html_safe, edit_site_path(site), class: "btn btn-danger"
+          
+= will_paginate(@sites, renderer: BootstrapLinkRenderer)

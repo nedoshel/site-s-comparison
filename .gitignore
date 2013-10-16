@@ -2,6 +2,7 @@
 /log/*.log
 /tmp
 /config/database.yml
+
 *.gem
 *.rbc
 .bundle
@@ -19,4 +20,5 @@ tmp
 # YARD artifacts
 .yardoc
 _yardoc
+<<<<<<< HEAD
 doc/

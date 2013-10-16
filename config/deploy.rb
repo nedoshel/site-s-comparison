@@ -9,18 +9,20 @@ set :rails_env,   "production"
 set :app_env,     "production"
 
 set :app_port, 80
-set :server_name, "sites_comparison"
+set :server_name, "94.127.66.69"
 set :sudo_user, :deploy
-set :application, "sites_comparison"
+set :application, "94.127.66.69"
 
 set :rvm_type, :user
 set :rvm_ruby_string, "ruby-1.9.3-p448"
-#set :rvm_ruby_string, :local
-set :default_shell, :bash
-set :rvm_bin_path, "/usr/local/rvm"
 
-set :application, "sites_comparison"
-set :deploy_to, "~/sites_comparison"
+#set :rvm_ruby_string, :local
+#set :default_shell, :bash
+set :default_shell, "/bin/bash -l"
+set :rvm_bin_path, "/usr/local/rvm/bin"
+
+#set :application, "sites_comparison"
+set :deploy_to, "/root/sites_comparison"
 set :scm, :git
 set :repository,  "https://github.com/nedoshel/site-s-comparison.git"
 
@@ -37,17 +39,18 @@ role :web, "94.127.66.69"
 role :db,  "94.127.66.69"
 
 set :bundle_cmd, "/usr/local/rvm/gems/#{rvm_ruby_string}@global/bin/bundle"
-set :bundle_dir, "/usr/local/rvm/gems/#{rvm_ruby_string}"
+set :bundle_dir, "/usr/local/rvm/gems/#{rvm_ruby_string}/bin"
 # set :passenger_port, 3010
 # set :passenger_cmd,  "#{bundle_cmd} exec passenger"
 
 before "deploy", "deploy:setup"
 before "deploy:assets:precompile", "db:config"
-after "deploy", "db:migrate", "deploy:cleanup", "assets:precompile", "db:seed"
-after "deploy", "assets:symlinks"
-after "deploy", "server:restart"
+after 'deploy:update_code', "assets:symlinks"
+#after "deploy", "db:migrate"
+after "deploy", "deploy:cleanup", "assets:precompile", "db:seed"
+after "deploy", "thin:restart"
 
-  namespace :server do
+  namespace :thin do
     desc "Start the Thin processes"
     task :start do
       run  <<-CMD
@@ -76,11 +79,6 @@ after "deploy", "server:restart"
       operation with config and migrations
     EOD
 
-    # task :config do
-    #   run "cp -f #{deploy_to}/database.yml #{current_release}/config"
-    # end
-    #bundle exec rake db:create RAILS_ENV=production
-
     task :prepare do
       run " cd #{deploy_to} && bundle exec rake prepare[#{deploy_to}/current/db/migrate,#{previous_release}/db/migrate] "
     end
@@ -95,13 +93,15 @@ after "deploy", "server:restart"
 
   namespace :assets do
     task :symlinks, roles: :app do
-      run "mkdir -p #{deploy_to}/shared/ckeditor_assets"
-      # /shared/ckeditor_assets => /current/public/ckeditor_assets
-      run "ln -s #{deploy_to}/shared/ckeditor_assets #{deploy_to}/current/public/ckeditor_assets"   
+      if !remote_file_exists?("#{deploy_to}/current/config/database.yml")
+        run "ln -s #{deploy_to}/shared/database.yml #{latest_release}/config/database.yml"   
+      end
     end
     task :precompile, roles: :web, except: { no_release: true } do
       run "cd #{latest_release}; bundle exec rake assets:precompile RAILS_ENV=production"
     end
   end
 
+def remote_file_exists?(full_path)
+  'true' ==  capture("if [ -e #{full_path} ]; then echo 'true'; fi").strip
 end

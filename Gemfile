@@ -14,7 +14,9 @@ group :assets do
 end
 
 group :development do
-	gem 'thin'
+	gem 'capistrano' 
+  gem 'rvm-capistrano'
+  gem "localtunnel"
 end
-
+gem 'thin'
 gem 'jquery-rails'

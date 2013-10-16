@@ -9,9 +9,15 @@ class Site < ActiveRecord::Base
   validates :site_url, uniqueness: true
   before_create :set_site_updated_at
 
+  class << self
+    def update_sites
+      self.all.each do |site|
+        site.compare_context
+      end
+    end
+  end
 
   # сравнить содержимое
-
   def compare_context
     old_site_content = site_context
     begin

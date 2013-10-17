@@ -10,6 +10,6 @@
         .control-label
           = f.label :site_regexp
         .controls
-          = f.text_field :site_regexp, class: "input-xlarge"
+          = f.text_area :site_regexp, class: "input-xlarge", rows: 5, cols: 40
   .form-actions
     = f.submit t("label.save"), class: "btn btn-primary"

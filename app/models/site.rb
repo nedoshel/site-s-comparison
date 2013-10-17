@@ -18,14 +18,21 @@ class Site < ActiveRecord::Base
     end
   end
 
+  # Список регулярных выражений
+  def regexp
+    site_regexp.split(/\r\n/)
+  end
+
   # Разница
   def diff
     old = self.old_site_context.to_s.gsub(/\r?\n?\t/, '')
     current = self.site_context.to_s.gsub(/\r?\n?\t/, '')
-    if self.site_regexp.present?       
-      reg = Regexp.new(self.site_regexp)
-      old = old.gsub(reg, '')
-      current = current.gsub(reg, '')
+    if self.site_regexp.present?
+      regexp.each do |r|  
+        reg = Regexp.new(r)          
+        old = old.gsub(reg, '')
+        current = current.gsub(reg, '')
+      end    
     end
     Diffy::Diff.new(current, old, allow_empty_diff: false).to_s(:html)
   end
@@ -40,9 +47,11 @@ class Site < ActiveRecord::Base
       return {status: 'error while connecting', flag: false}
     end
     if self.site_regexp.present?       
-      reg = Regexp.new(self.site_regexp)
-      old_context = old_context.gsub(reg, '')
-      new_context = new_context.gsub(reg, '')
+      regexp.each do |r|  
+        reg = Regexp.new(r) 
+        old_context = old_context.gsub(reg, '')
+        new_context = new_context.gsub(reg, '')
+      end
     end
     if old_context == new_context
       self.save

@@ -12,7 +12,7 @@
         %tr{data: {toggle: "collapse", target: "#collapse#{site.id}"}, class: "accordion-toggle"}
           %td= link_to site.site_url, site.site_url, target: "_blank"
           %td= site.site_updated_at.try(:getlocal).try(:strftime, "%d.%m.%Y %H:%M")
-          %td= site.site_regexp
+          %td= simple_format site.site_regexp
           %td= link_to '<i class="icon-refresh"></i>'.html_safe, update_time_site_path(site), method: :put, class: "btn" 
           %td
             = link_to '<i class="icon-pencil"></i>'.html_safe, edit_site_path(site), class: "btn" 
@@ -20,7 +20,5 @@
           %tr
             %td{colspan: 5} 
               .accordian-body.collapse{id: "collapse#{site.id}"}
-                = site.diff.html_safe
-
-          
+                = site.diff.html_safe          
 = will_paginate(@sites, renderer: BootstrapLinkRenderer)

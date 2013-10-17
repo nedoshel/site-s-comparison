@@ -24,10 +24,9 @@
               %li{class: current_page?(sites_path) ? "active" : ''}= link_to 'список страниц', sites_path
               %li{class: current_page?(new_site_path) ? "active" : ''}= link_to 'добавить страницу', new_site_path
     .container
-      .row
-        .span12
-          = bootstrap_flash
-          = yield
+      .span12
+        = bootstrap_flash
+        = yield
       %footer
         %p
     = javascript_include_tag "application"

@@ -6,6 +6,7 @@ gem 'russian'
 gem "will_paginate"
 gem "twitter-bootstrap-rails"
 gem "rails3_before_render"
+gem 'diffy'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'

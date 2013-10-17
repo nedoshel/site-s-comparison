@@ -2,6 +2,7 @@
 class Site < ActiveRecord::Base
   require 'open-uri'
   attr_accessible :site_context,
+                  :old_site_context,
                   :site_updated_at,
                   :site_url,
                   :site_regexp
@@ -17,27 +18,41 @@ class Site < ActiveRecord::Base
     end
   end
 
+  # Разница
+  def diff
+    old = self.old_site_context.to_s.gsub(/\r?\n?\t/, '')
+    current = self.site_context.to_s.gsub(/\r?\n?\t/, '')
+    if self.site_regexp.present?       
+      reg = Regexp.new(self.site_regexp)
+      old = old.gsub(reg, '')
+      current = current.gsub(reg, '')
+    end
+    Diffy::Diff.new(current, old, allow_empty_diff: false).to_s(:html)
+  end
+
   # сравнить содержимое
   def compare_context
-    old_site_content = site_context
+    self.old_site_context = old_context = self.site_context
     begin
-      self.site_context = new_site_content = open(site_url).read
+      self.site_context = new_context = open(site_url).read
     #rescue => e
     rescue
       return {status: 'error while connecting', flag: false}
     end
     if self.site_regexp.present?       
       reg = Regexp.new(self.site_regexp)
-      old_site_content = old_site_content.gsub(reg, '')
-      new_site_content = new_site_content.gsub(reg, '')
-    end   
-    if old_site_content == new_site_content
+      old_context = old_context.gsub(reg, '')
+      new_context = new_context.gsub(reg, '')
+    end
+    if old_context == new_context
+      self.save
       return {status: 'ok', flag: true} 
-    else 
+    else
       self.site_updated_at = Time.now
       self.save
       return {status: 'ok', flag: false}
     end
+
   end
 
   private

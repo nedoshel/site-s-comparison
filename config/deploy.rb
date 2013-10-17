@@ -53,22 +53,25 @@ after "deploy", "thin:restart"
   namespace :thin do
     desc "Start the Thin processes"
     task :start do
+      # run  <<-CMD
+      #   cd #{deploy_to}/current && bundle exec thin start -C config/thin.yml
+      # CMD
       run  <<-CMD
-        cd #{deploy_to}/current && bundle exec thin start -C config/thin.yml
+        cd #{deploy_to}/current &&  bundle exec thin start -p 80 -d -e production
       CMD
     end
 
     desc "Stop the Thin processes"
     task :stop do
       run <<-CMD
-        cd #{deploy_to}/current && bundle exec thin stop -C config/thin.yml
+        cd #{deploy_to}/current && bundle exec thin stop -p 80 -d -e production
       CMD
     end
 
     desc "Restart the Thin processes"
     task :restart do
       run <<-CMD
-        cd #{deploy_to}/current && bundle exec thin restart -C config/thin.yml
+        cd #{deploy_to}/current && bundle exec thin restart -p 80 -d -e production
       CMD
     end
   end

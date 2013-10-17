@@ -13,11 +13,11 @@ set :server_name, "94.127.66.69"
 set :sudo_user, :deploy
 set :application, "94.127.66.69"
 
-set :rvm_type, :user
+set :rvm_type, :system
 set :rvm_ruby_string, "ruby-1.9.3-p448"
 
 #set :default_shell, :bash
-set :default_shell, "/bin/bash -l -c"
+set :default_shell, "/bin/bash -l"
 set :rvm_bin_path, "/usr/local/rvm/bin"
 
 #set :application, "sites_comparison"
@@ -44,7 +44,8 @@ set :bundle_dir, "/usr/local/rvm/gems/#{rvm_ruby_string}/bin"
 
 before "deploy", "deploy:setup"
 before "deploy:assets:precompile", "db:config"
-after 'deploy:update_code', "assets:symlinks"
+before "db:migrate", "assets:symlinks"
+#after 'deploy:update_code', "assets:symlinks"
 after "deploy", "db:migrate"
 after "deploy", "deploy:cleanup", "assets:precompile", "db:seed"
 after "deploy", "thin:restart"
@@ -53,21 +54,21 @@ after "deploy", "thin:restart"
     desc "Start the Thin processes"
     task :start do
       run  <<-CMD
-        cd #{deploy_to} && bundle exec thin start -C config/thin.yml
+        cd #{deploy_to}/current && bundle exec thin start -C config/thin.yml
       CMD
     end
 
     desc "Stop the Thin processes"
     task :stop do
       run <<-CMD
-        cd #{deploy_to} && bundle exec thin stop -C config/thin.yml
+        cd #{deploy_to}/current && bundle exec thin stop -C config/thin.yml
       CMD
     end
 
     desc "Restart the Thin processes"
     task :restart do
       run <<-CMD
-        cd #{deploy_to} && bundle exec thin restart -C config/thin.yml
+        cd #{deploy_to}/current && bundle exec thin restart -C config/thin.yml
       CMD
     end
   end

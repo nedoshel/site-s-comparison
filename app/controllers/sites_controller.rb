@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class SitesController < ApplicationController
   def index
-    @sites = Site.paginate  page: params[:page], order: :site_updated_at, limit: 20
+    @sites = Site.paginate  page: params[:page], order: 'site_updated_at desc', limit: 20
   end
 
   def new

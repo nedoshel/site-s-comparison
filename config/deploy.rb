@@ -16,9 +16,8 @@ set :application, "94.127.66.69"
 set :rvm_type, :user
 set :rvm_ruby_string, "ruby-1.9.3-p448"
 
-#set :rvm_ruby_string, :local
 #set :default_shell, :bash
-set :default_shell, "/bin/bash -l"
+set :default_shell, "/bin/bash -l -c"
 set :rvm_bin_path, "/usr/local/rvm/bin"
 
 #set :application, "sites_comparison"
@@ -31,7 +30,7 @@ set :branch, "master"
 
 set :user, "root"
 
-set :use_sudo, true
+set :use_sudo, false
 set :keep_releases, 2
 
 role :app, "94.127.66.69"
@@ -46,7 +45,7 @@ set :bundle_dir, "/usr/local/rvm/gems/#{rvm_ruby_string}/bin"
 before "deploy", "deploy:setup"
 before "deploy:assets:precompile", "db:config"
 after 'deploy:update_code', "assets:symlinks"
-#after "deploy", "db:migrate"
+after "deploy", "db:migrate"
 after "deploy", "deploy:cleanup", "assets:precompile", "db:seed"
 after "deploy", "thin:restart"
 

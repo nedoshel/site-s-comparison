@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 class Site < ActiveRecord::Base
   require 'open-uri'
+  include ActionView::Helpers::SanitizeHelper
+
   attr_accessible :site_context,
                   :old_site_context,
                   :site_updated_at,
@@ -18,28 +20,26 @@ class Site < ActiveRecord::Base
     end
   end
 
-  # Список регулярных выражений
-  def regexp
-    site_regexp.split(/\r\n/)
+  # ВОзвращает старое и новое site_context,
+  # применяя регулярные выражения
+  def regexp!
+    reg = Regexp.new(site_regexp.split(/\r\n/).join("|"))
+    old = sanitize(self.old_site_context.to_s, tags: %w(), attributes: %w()).strip.gsub(/\s+/, ' ')
+    current = sanitize(self.site_context.to_s, tags: %w(), attributes: %w()).strip.gsub(/\s+/, ' ')
+    old = old.gsub(reg, '')
+    current = current.gsub(reg, '')
+    [current, old]
   end
 
   # Разница
   def diff
-    old = self.old_site_context.to_s.gsub(/\r?\n?\t/, '')
-    current = self.site_context.to_s.gsub(/\r?\n?\t/, '')
-    if self.site_regexp.present?
-      regexp.each do |r|  
-        reg = Regexp.new(r)          
-        old = old.gsub(reg, '')
-        current = current.gsub(reg, '')
-      end    
-    end
+    current, old = regexp!
     Diffy::Diff.new(current, old, allow_empty_diff: false).to_s(:html)
   end
 
   # сравнить содержимое
   def compare_context
-    self.old_site_context = old_context = self.site_context
+    self.old_site_context = old_context = self.site_context.to_s
     begin
       self.site_context = new_context = open(site_url).read
     #rescue => e
@@ -47,11 +47,7 @@ class Site < ActiveRecord::Base
       return {status: 'error while connecting', flag: false}
     end
     if self.site_regexp.present?       
-      regexp.each do |r|  
-        reg = Regexp.new(r) 
-        old_context = old_context.gsub(reg, '')
-        new_context = new_context.gsub(reg, '')
-      end
+      new_context, old_context = regexp!
     end
     if old_context == new_context
       self.save

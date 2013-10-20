@@ -8,7 +8,11 @@ class SitesController < ApplicationController
     @site = Site.new
   end
 
-def create
+  def show
+    @site = Site.find(params[:id])
+  end
+
+  def create
     @site = Site.new(params[:site])
     if @site.save
       respond_to do |format|

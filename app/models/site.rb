@@ -24,11 +24,15 @@ class Site < ActiveRecord::Base
   # применяя регулярные выражения
   def regexp!
     reg = Regexp.new(site_regexp.split(/\r\n/).join("|"))
-    old = sanitize(self.old_site_context.to_s, tags: %w(), attributes: %w()).strip.gsub(/\s+/, ' ')
-    current = sanitize(self.site_context.to_s, tags: %w(), attributes: %w()).strip.gsub(/\s+/, ' ')
-    old = old.gsub(reg, '')
-    current = current.gsub(reg, '')
-    [current, old]
+    # old = sanitize(self.old_site_context.to_s, tags: %w(), attributes: %w())
+    #   .strip.gsub(/\s+|\!--.+--\>/, ' ')
+    # current = sanitize(self.site_context.to_s, tags: %w(), attributes: %w())
+    #   .strip.gsub(/\s+|\!--.+--\>/, ' ')
+    old = self.old_site_context.to_s
+      # .strip.gsub(/\s+|\!--.+--\>/, ' ')
+    current = self.site_context.to_s
+      # .strip.gsub(/\s+|\!--.+--\>/, ' ')
+    [current.gsub(reg, ''), old.gsub(reg, '')]
   end
 
   # Разница

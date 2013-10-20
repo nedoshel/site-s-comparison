@@ -9,16 +9,12 @@
   #accordion2.accordion
     %tbody
       - @sites.each do |site|
-        %tr{data: {toggle: "collapse", target: "#collapse#{site.id}"}, class: "accordion-toggle"}
-          %td= link_to site.site_url, site.site_url, target: "_blank"
+        %tr.site-link{data:{url: site_path(site)}}
+          %td.main-link= link_to site.site_url, site.site_url, target: "_blank"
           %td= site.site_updated_at.try(:getlocal).try(:strftime, "%d.%m.%Y %H:%M")
           %td= simple_format(h( site.site_regexp))
-          %td= link_to '<i class="icon-refresh"></i>'.html_safe, update_time_site_path(site), method: :put, class: "btn" 
-          %td
+          %td.main-link= link_to '<i class="icon-refresh"></i>'.html_safe, update_time_site_path(site), method: :put, class: "btn" 
+          %td.main-link
             = link_to '<i class="icon-pencil"></i>'.html_safe, edit_site_path(site), class: "btn" 
-            = link_to '<i class="icon-trash"></i>'.html_safe, site_path(site), method: :delete, class: "btn btn-danger"
-          %tr
-            %td{colspan: 5} 
-              .accordian-body.collapse{id: "collapse#{site.id}"}
-                = site.diff.html_safe          
+            = link_to '<i class="icon-trash"></i>'.html_safe, site_path(site), method: :delete, class: "btn btn-danger"       
 = will_paginate(@sites, renderer: BootstrapLinkRenderer)

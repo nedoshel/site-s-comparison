@@ -24,14 +24,8 @@ class Site < ActiveRecord::Base
   # применяя регулярные выражения
   def regexp!
     reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
-    # old = sanitize(self.old_site_context.to_s, tags: %w(), attributes: %w())
-    #   .strip.gsub(/\s+|\!--.+--\>/, ' ')
-    # current = sanitize(self.site_context.to_s, tags: %w(), attributes: %w())
-    #   .strip.gsub(/\s+|\!--.+--\>/, ' ')
     old = self.old_site_context.to_s
-      # .strip.gsub(/\s+|\!--.+--\>/, ' ')
     current = self.site_context.to_s
-      # .strip.gsub(/\s+|\!--.+--\>/, ' ')
     [current.gsub(reg, ''), old.gsub(reg, '')]
   end
 
@@ -45,7 +39,8 @@ class Site < ActiveRecord::Base
   def compare_context
     self.old_site_context = old_context = self.site_context.to_s
     begin
-      self.site_context = new_context = open(site_url).read
+      #self.site_context = new_context = open(site_url).read
+      self.site_context = new_context = %x(wget -qO- #{site_url} | cat)
     #rescue => e
     rescue
       return {status: 'error while connecting', flag: false}

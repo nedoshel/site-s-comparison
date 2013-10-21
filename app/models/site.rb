@@ -24,8 +24,8 @@ class Site < ActiveRecord::Base
   # применяя регулярные выражения
   def regexp!
     reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
-    old = self.old_site_context.to_s
-    current = self.site_context.to_s
+    old = self.old_site_context.to_s.force_encoding('UTF-8')
+    current = self.site_context.to_s.force_encoding('UTF-8')
     [current.gsub(reg, ''), old.gsub(reg, '')]
   end
 

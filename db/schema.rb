@@ -11,16 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131017115237) do
+ActiveRecord::Schema.define(:version => 20131021122004) do
 
   create_table "sites", :force => true do |t|
     t.string   "site_url"
-    t.text     "site_context"
-    t.text     "old_site_context"
+    t.text     "site_context",     :limit => 16777215
+    t.text     "old_site_context", :limit => 16777215
     t.datetime "site_updated_at"
     t.string   "site_regexp",      :limit => 500
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
   end
 
 end

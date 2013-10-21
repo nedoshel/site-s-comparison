@@ -39,8 +39,8 @@ class Site < ActiveRecord::Base
   def compare_context
     self.old_site_context = old_context = self.site_context.to_s
     begin
-      #self.site_context = new_context = open(site_url).read
-      self.site_context = new_context = %x(wget -qO- #{site_url} | cat)
+      self.site_context = new_context = open(site_url).read
+      #self.site_context = new_context = %x(wget -qO- #{site_url} | cat)
     #rescue => e
     rescue
       return {status: 'error while connecting', flag: false}

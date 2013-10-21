@@ -23,7 +23,7 @@ class Site < ActiveRecord::Base
   # ВОзвращает старое и новое site_context,
   # применяя регулярные выражения
   def regexp!
-    reg = Regexp.new(site_regexp.split(/\r\n/).join("|"))
+    reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
     # old = sanitize(self.old_site_context.to_s, tags: %w(), attributes: %w())
     #   .strip.gsub(/\s+|\!--.+--\>/, ' ')
     # current = sanitize(self.site_context.to_s, tags: %w(), attributes: %w())

@@ -38,10 +38,14 @@ class Site < ActiveRecord::Base
   # сравнить содержимое
   def compare_context
     self.old_site_context = old_context = self.site_context.to_s
+
     begin
-      self.site_context = new_context = open(site_url).read
+      Timeout::timeout(10){ 
+       self.site_context = new_context = open(site_url, { read_timeout: 10 }).read
+      }       
       #self.site_context = new_context = %x(wget -qO- #{site_url} | cat)
-    #rescue => e
+    rescue Timeout::Error
+      return {status: 'timeout', flag: false}
     rescue
       return {status: 'error while connecting', flag: false}
     end

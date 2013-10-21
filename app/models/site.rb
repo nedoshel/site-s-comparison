@@ -26,7 +26,11 @@ class Site < ActiveRecord::Base
     reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
     old = self.old_site_context.to_s
     current = self.site_context.to_s
-    [current.gsub(reg, ''), old.gsub(reg, '')]
+    if site_regexp.present?
+      [current.gsub(reg, ''), old.gsub(reg, '')]
+    else
+      [current, old]
+    end
   end
 
   # Разница

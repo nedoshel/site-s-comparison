@@ -24,8 +24,8 @@ class Site < ActiveRecord::Base
   # применяя регулярные выражения
   def regexp!
     reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
-    old = self.old_site_context.to_s.force_encoding('UTF-8')
-    current = self.site_context.to_s.force_encoding('UTF-8')
+    old = self.old_site_context.to_s
+    current = self.site_context.to_s
     [current.gsub(reg, ''), old.gsub(reg, '')]
   end
 
@@ -40,7 +40,7 @@ class Site < ActiveRecord::Base
     self.old_site_context = old_context = self.site_context.to_s
     begin
       #self.site_context = new_context = open(site_url).read
-      self.site_context = new_context = %x(wget -qO- #{site_url} | cat).force_encoding('UTF-8')
+      self.site_context = new_context = %x(wget -qO- #{site_url} | cat)
     #rescue => e
     rescue
       return {status: 'error while connecting', flag: false}

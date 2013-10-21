@@ -23,10 +23,10 @@ class Site < ActiveRecord::Base
   # ВОзвращает старое и новое site_context,
   # применяя регулярные выражения
   def regexp!
-    reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
     old = self.old_site_context.to_s
     current = self.site_context.to_s
     if site_regexp.present?
+      reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
       [current.gsub(reg, ''), old.gsub(reg, '')]
     else
       [current, old]

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Site < ActiveRecord::Base
   require 'open-uri'
-  include ActionView::Helpers::SanitizeHelper
+  require 'nokogiri'
 
   attr_accessible :site_context,
                   :old_site_context,
@@ -37,7 +37,11 @@ class Site < ActiveRecord::Base
   # Разница
   def diff
     current, old = regexp!
-    Diffy::Diff.new(current, old, allow_empty_diff: false).to_s(:html)
+    doc = Nokogiri::HTML(Diffy::Diff.new(current, old, allow_empty_diff: false).to_s(:html))
+    doc.css("li").each do |li|
+      li.remove if li["class"] == "unchanged" 
+    end
+    doc.to_s    
   end
 
   # сравнить содержимое

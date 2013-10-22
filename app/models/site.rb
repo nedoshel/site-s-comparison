@@ -25,6 +25,7 @@ class Site < ActiveRecord::Base
   def regexp!
     old = self.old_site_context.to_s
     current = self.site_context.to_s
+
     if site_regexp.present?
       reg = Regexp.new(site_regexp.split(/\r\n/).join("|"), Regexp::MULTILINE)
       [current.gsub(reg, ''), old.gsub(reg, '')]

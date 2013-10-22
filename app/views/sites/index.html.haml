@@ -9,11 +9,13 @@
   #accordion2.accordion
     %tbody
       - @sites.each do |site|
-        %tr.site-link{data:{url: site_path(site)}}
-          %td.main-link= link_to site.site_url, site.site_url, target: "_blank"
-          %td= site.site_updated_at.try(:getlocal).try(:strftime, "%d.%m.%Y %H:%M")
+        %tr
+          %td.main-link= link_to site.site_url, site.site_url
+          %td
+            = link_to(site_path(site)) do
+              = site.site_updated_at.try(:getlocal).try(:strftime, "%d.%m.%Y %H:%M")
           %td= simple_format(h( site.site_regexp))
-          %td.main-link= link_to '<i class="icon-refresh"></i>'.html_safe, update_time_site_path(site), method: :put, class: "btn" 
+          %td.main-link= link_to '<i class="icon-refresh"></i>'.html_safe, update_time_site_path(site), class: "btn" 
           %td.main-link
             = link_to '<i class="icon-pencil"></i>'.html_safe, edit_site_path(site), class: "btn" 
             = link_to '<i class="icon-trash"></i>'.html_safe, site_path(site), method: :delete, class: "btn btn-danger"       
